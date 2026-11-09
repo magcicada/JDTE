@@ -9,18 +9,21 @@ import net.darkhax.botanypots.data.displaystate.SimpleDisplayState;
 import net.darkhax.botanypots.data.displaystate.TransitionalDisplayState;
 import net.darkhax.botanypots.data.recipes.crop.BasicCrop;
 import net.darkhax.botanypots.data.recipes.crop.Crop;
+import net.darkhax.botanypots.data.recipes.soil.BasicSoil;
 import net.darkhax.botanypots.data.recipes.soil.Soil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -56,27 +59,35 @@ public final class BotanyPotsGreenhouseIntegration {
         BlockPos probePos = BlockPos.ZERO;
         if (!crop.matchesLookup(level, probePos, probe(level, probePos), seed)) return null;
 
-        SoilMatch soilMatch = findCompatibleSoil(level, seed, crop);
-        if (soilMatch == null) return null;
-        Soil soil = soilMatch.soil();
+        Soil soil = findCompatibleSoil(level, crop);
+        if (soil == null) return null;
         int growthWork = Math.max(1, BotanyPotHelper.getRequiredGrowthTicks(
                 level, probePos, probe(level, probePos), crop, soil));
         List<ItemStack> previewOutputs = getPreviewOutputs(crop, seed, level, probePos);
         ResourceLocation displayBlock = getDisplayBlock(crop, level, probePos, seed, previewOutputs);
-        ItemStack soilItem = soilMatch.soilItem().copyWithCount(1);
 
         return new GreenhouseCropDefinition(previewOutputs, displayBlock, displayBlock, false,
                 growthWork, JDTEConfig.COMMON.greenhouseGenericFluidCost.get(),
                 (serverLevel, pos, tool) -> harvest(serverLevel, pos, crop, soil, growthWork));
     }
 
-    private static SoilMatch findCompatibleSoil(Level level, ItemStack seed, Crop crop) {
+    private static Soil findCompatibleSoil(Level level, Crop crop) {
+        BlockPos pos = BlockPos.ZERO;
+        ProbePot pot = probe(level, pos);
         for (Soil soil : level.getRecipeManager().getAllRecipesFor(BotanyPotHelper.SOIL_TYPE.get())) {
-            for (var item : BuiltInRegistries.ITEM) {
+            Iterable<Item> candidates = BuiltInRegistries.ITEM;
+            // Custom soils and ingredients can match items outside their display stacks.
+            if (soil instanceof BasicSoil basicSoil && soil.getClass() == BasicSoil.class
+                    && basicSoil.getIngredient().isVanilla()) {
+                candidates = Arrays.stream(basicSoil.getIngredient().getItems())
+                        .map(ItemStack::getItem)
+                        .distinct()
+                        .toList();
+            }
+            for (Item item : candidates) {
                 ItemStack soilItem = item.getDefaultInstance();
-                if (!soil.matchesLookup(level, BlockPos.ZERO, probe(level, BlockPos.ZERO), soilItem)) continue;
-                if (!BotanyPotHelper.canCropGrow(level, BlockPos.ZERO, probe(level, BlockPos.ZERO), soil, crop)) continue;
-                return new SoilMatch(soil, soilItem);
+                if (!soil.matchesLookup(level, pos, pot, soilItem)) continue;
+                if (BotanyPotHelper.canCropGrow(level, pos, pot, soil, crop)) return soil;
             }
         }
         return null;
@@ -132,9 +143,6 @@ public final class BotanyPotsGreenhouseIntegration {
     }
 
     public record DiscoveredCrop(ResourceLocation recipeId, ItemStack seed, GreenhouseCropDefinition definition) {
-    }
-
-    private record SoilMatch(Soil soil, ItemStack soilItem) {
     }
 
     private static ProbePot probe(Level level, BlockPos pos) {
