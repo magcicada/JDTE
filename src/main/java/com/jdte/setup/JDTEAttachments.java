@@ -251,11 +251,18 @@ public final class JDTEAttachments {
 
     private static final class PlayerDataProvider implements ICapabilityProvider, net.minecraftforge.common.util.INBTSerializable<CompoundTag> {
         private final LifeAppleData data = new LifeAppleData();
-        private final LazyOptional<LifeAppleData> optional = LazyOptional.of(() -> data);
+        private LazyOptional<LifeAppleData> optional = LazyOptional.of(() -> data);
 
         @Override
         public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction side) {
-            return capability == LIFE_APPLE_DATA ? optional.cast() : LazyOptional.empty();
++            if (capability != LIFE_APPLE_DATA) {
++                return LazyOptional.empty();
++            }
++            // Forge revives the entity's capability dispatcher, but not its old handles.
++            if (!optional.isPresent()) {
++                optional = LazyOptional.of(() -> data);
++            }
++            return optional.cast();
         }
 
         @Override
