@@ -1,10 +1,28 @@
 # JDT Extras
 
-JDT Extras (`jdte`) 是 [Just Dire Things](https://www.curseforge.com/minecraft/mc-mods/just-dire-things) 的 NeoForge 扩展模组，为 JDT 增加升级卡、扩展机器、时间加速、范围控制和自动化设备。
+JDT Extras (`jdte`) 是 [Just Dire Things](https://www.curseforge.com/minecraft/mc-mods/just-dire-things) 的 Forge 1.20.1 扩展模组，为 JDT 增加升级卡、扩展机器、时间加速、范围控制和自动化设备。
 
-当前版本：`0.5.8-forge-1.20.1`
+当前版本：`0.6.5.4`
 
 [English README](README_EN.md)
+
+### 0.6.5.4 新增
+
+- 完成 1.21.1 → 1.20.1 的 0.6.5.3/0.6.5.4 特性移植。
+- 新增顶级精华转化升级（`jdte:ultimate_essence_conversion_upgrade`）：最多可绑定 2,147,483,647 个合成样板，由高级精华转化升级在锻造台升级并保留已绑定样板，与普通版/高级版互斥。
+- 精华转化提示与 Jade 悬浮信息改为折叠显示，不再逐条铺满屏幕。
+- 修复普通/大型温室精华样板轮转数组长度固定导致的越界问题。
+- 修复生物工厂输出槽超过 99 个物品时区块保存与方块实体同步崩溃的问题。
+- Curios 改为可选依赖，并在所有 Curios 查询前增加缺失保护。
+- 升级兼容判定改为与上游 1.21.1 一致：被显式拦截的机器族保留源码清单（高级物品收集器两张顶级卡都不收，实体抑制器/范围阻断器只收顶级容量），其余机器族走源码默认分支，因此顶级容量/顶级超频现在可装入胶水激活器、战利品制造机、原生 JDT 机器、时间冻结器等家族。
+- 两张顶级卡升为 V：新增 `UltimateDefaultBranchGameTests` 验证胶水激活器与战利品制造机的真实 ×50 容量与成本、单卡上限与存档重载，并新增无头真实客户端流水线（Xvfb）验证两个 GUI、菜单安装、创造栏与 JEI。详见 [顶级卡验收证据](docs/validation/forge-1.20.1-ultimate-cards/README.md)。
+- 24 个机器族从 P 升为 U：这些行原先唯一的缺口就是顶级卡准入，闸门与上游对齐后缺口已闭合，剩下的是专项验收覆盖（属 U）。仍为 P 的 16 行各自有具体缺口。计数 V61 / U44 / P16 / N0。
+- 修复流体发送/接收界面在大容量储罐下储罐条显示为空的问题（JDT 用整数除法算条高，4,000 mB 装进 400,000 mB 的顶级容量罐会算成 0 px），`BaseMachineScreenMixin` 现补画缺失的那一行；Advanced/Extended 流体发送器据此升为 V（真实无头客户端 run 44673884793 实测 1 个逻辑像素）。计数 V63 / U44 / P14 / N0。
+- 8 台 Extended T2 机器从 P 升为 U：operation parity 复核未发现缺失方法，唯一真实差异（上游在 `getCloneItemStack` 外包 try/catch 兜底）已移植到点击器、破坏器、放置器、交换器、流体放置器与时间加速器。计数 V63 / U52 / P6 / N0。
+- 高级药水酿造从 P 升为 V：补上源码的合并加速酿造（它是唯一没实现 `CoalescedAcceleratedMachine` 的机器，时间加速器的虚拟 tick 原本被丢弃）；GameTest 固定了源码语义：合并步付 300 FE，并在无充能时买一份烈焰粉充能但不消耗它。两个温室仍为 P，措辞改为准确说明：其矩阵接口是给伴随 mod `jdte_matrix` 的契约，1.20.1 无对应实现者。计数 V64 / U52 / P5 / N0。
+- 三档时间加速器从 P 升为 U：真缺口只有过滤缓存（源码按方块状态缓存过滤结果，避免每个扫描位置重算），已移植并加 GameTest；`TimeAccelerationTargetProxy` 与上游逐字一致；所谓“服务端计时”是本分支自建调度器的设计选择而非缺失 API。计数 V64 / U55 / P2 / N0。
+- 两个温室（`jdte:greenhouse` / `jdte:large_greenhouse`）已从创造栏与 JEI 隐藏（含配方分类、配方与催化剂），注册保留以便旧存档继续加载。原因：机器本身可用，但其源码集成面 `GreenhouseMatrixMember` / `ICreativeGreenhouse` 是给伴随 mod `jdte_matrix` 的契约，1.20.1 没有对应版本；在集成路径缺失时把它们当作完成内容展示会误导。
+- 6 个物品/流体接收器与 3 个流体稳定器从 U 升为 V：凭已有的专项 GameTest（真实相邻箱子/储罐、精确守恒、存档往返、FE 闸门、真实 FluidDrop 配方与单催化剂消耗）。计数 V100 / U19 / P2 / N0。
 
 ### 0.5.8 新增
 

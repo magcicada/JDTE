@@ -11,8 +11,8 @@ def main():
  p=argparse.ArgumentParser();p.add_argument('--check',action='store_true');args=p.parse_args()
  curated=json.loads(META.read_text());ref=curated['reference'];src=subprocess.check_output(['git','show',f'{ref}:src/main/java/com/jdte/setup/JDTEItems.java'],cwd=ROOT,text=True)
  forge=(ROOT/'src/main/java/com/jdte/setup/JDTEItems.java').read_text();source_ids=re.findall(r'ITEMS\.register\(\s*"([^"]+)"',src);forge_ids=set(re.findall(r'ITEMS\.register\(\s*"([^"]+)"',forge))
- assert len(source_ids)==len(set(source_ids))==120
- rows=curated['rows'];assert {r['id'] for r in rows}==set(source_ids) and len(rows)==120
+ assert len(source_ids)==len(set(source_ids))==121
+ rows=curated['rows'];assert {r['id'] for r in rows}==set(source_ids) and len(rows)==121
  java=collections.defaultdict(list)
  for path in (ROOT/'src/main/java').rglob('*.java'):java[path.stem].append(str(path.relative_to(ROOT)))
  be=(ROOT/'src/main/java/com/jdte/setup/JDTEBlockEntities.java').read_text();menus=(ROOT/'src/main/java/com/jdte/setup/JDTEMenus.java').read_text();blocks=(ROOT/'src/main/java/com/jdte/setup/JDTEBlocks.java').read_text()
@@ -34,12 +34,12 @@ def main():
   assert r['status'] in ['verified','implemented_unverified','partial','absent']
   if r['status']=='verified':assert present and r['model'] and r['translation'],i
  counts=dict(collections.Counter(r['status'] for r in rows))
- result={'reference':ref,'starting_commit':curated['starting_commit'],'source_item_count':120,'forge_item_count':len(forge_ids),'counts':counts,'rows':rows}
+ result={'reference':ref,'starting_commit':curated['starting_commit'],'source_item_count':121,'forge_item_count':len(forge_ids),'counts':counts,'rows':rows}
  out=ROOT/'docs/forge-1.20.1-feature-inventory.json';md=ROOT/'docs/forge-1.20.1-feature-matrix.md'
  labels={'verified':'V','implemented_unverified':'U','partial':'P','absent':'N'}
  text='''# Forge 1.20.1 feature migration matrix
 
-Reference: JDTE 0.6.5.2 `ccf46472abaf3856fa9eebe0f5ebd25d8f28e859`. Audit started at `020109b`; version stays 0.5.8. This inventory covers **all 120 literal item registrations**, including all entries in the original migration checklist, not just the initial registry delta. The unused `blockItem(name, ...)` helper adds no dynamic registrations.
+Reference: JDTE 0.6.5.4 `0d56f03092563820893afcca0be6a8fe5160877a`. Audit started at `020109b`; version tracks 0.6.5.4. This inventory covers **all 121 literal item registrations**, including all entries in the original migration checklist, not just the initial registry delta. The unused `blockItem(name, ...)` helper adds no dynamic registrations.
 
 ## Classification and limits
 
@@ -51,7 +51,7 @@ Reference: JDTE 0.6.5.2 `ccf46472abaf3856fa9eebe0f5ebd25d8f28e859`. Audit starte
 The machine family and individual upgrade rows are separate: a verified new card does not complete every feature of its host machine. Names come from the pinned English language file. `BE/Menu` and `Model/Language/Recipe` are static presence signals, not proof of working behavior. `Recipe` refers to an exact-name JSON only; source intentionally recipe-less or dynamic recipes are not inferred missing from this flag. JSON contains actual implementation file paths and blockstate presence. Source/Forge API renames and inherited methods are not classified as missing behavior solely from method-name differences.
 
 '''
- text+=f"Current inventory: source **120**, Forge **{len(forge_ids)}**. Status counts: "+', '.join(f'{labels[k]} **{counts.get(k,0)}**' for k in labels)+'.\n\n'
+ text+=f"Current inventory: source **121**, Forge **{len(forge_ids)}**. Status counts: "+', '.join(f'{labels[k]} **{counts.get(k,0)}**' for k in labels)+'.\n\n'
  text+='''## Evidence and cross-cutting systems
 
 | System | Status and evidence | Remaining boundary |
@@ -59,7 +59,7 @@ The machine family and individual upgrade rows are separate: a verified new card
 | Mineral core, survey, normal/large machines | V: mineral unit/GameTests, lifecycle/network evidence folders | Public-server stress and all data packs |
 | Bags, copier, patterns, conversion and AE cards | V for tested paths: upgrades/production-chain/AE runtime folders | Future absent-machine codecs do not exist yet |
 | Time Accelerators | P: native AE path verified; shared wand/proxy support is verified separately, while remaining area timing/proxy/filter-cache parity is incomplete | Real installed JDTE-AE whole-grid backend remains unverified |
-| Greenhouse family | P: core harvest/seed/recorded crafting verified | Source matrix integration and broader Ultimate support |
+| Greenhouse family | P: core harvest/seed/recorded crafting verified | Source matrix integration (Ultimate support is now present) |
 | Mixer family | V: production-chain and AE-runtime evidence, real clients/jobs/restart/Extras fuel | Complete reactor operation remains unverified |
 | Energy Brewing / Energy Overload | V for tested brewer and native/JDTE transmitter paths: energy-upgrade/transmitter evidence | New graphical card checks; JDTE transmitter acceptance is tracked separately |
 | Energy Transmitters | Both V: scoped source contracts, graphical/Curios/Draconic, native mixed network, dedicated offline/rejoin and installed ME production-JVM recovery evidence | Prolonged multiplayer, full fusion/reactor operation and external JDTE-AE backend are separate unverified scope |
@@ -72,7 +72,7 @@ The machine family and individual upgrade rows are separate: a verified new card
 | Time Multitool | V:196 JUnit/324 GameTests; real graphical mode/input/controller/native Hammer controls/JEI and exact player save/rejoin/resume; matching-JAR minimal production actual harvest callbacks/XP/native breaker/unload/fresh BE/two-JVM resource recovery | Generated input/material fixtures explicit; independent multiplayer/prolonged/cross-dimensional/unsaved-crash/arbitrary mod blocks/protection and every ability/JEI layout remain unverified |
 | Large Pocket Generator | V:180 JUnit/302 GameTests, real held/worn GUI/native toggle/G/JEI, natural inventory+Curios receiver credit/FE ledger and real player/world save/rejoin/resume; matching-JAR minimal production actual unload/fresh BE/exact NBT/two-JVM recovery | Explicit setup/FakePlayer work distinguished; independent multiplayer, prolonged uptime, cross-dimensional/unsaved-crash/arbitrary-mod behavior unverified |
 | Large Potion Canister | V:176 JUnit/284 GameTests, real handheld/Curios/P/JEI/C2S native bow, exact full effects/color; matching-JAR minimal production unload/fresh BE/restart and two independent clients with stale replay/handoff/cursor drop/actual pickup/two-server recovery | Controlled setup/handoff documented; cross-dimensional/prolonged/arbitrary potion mods and abrupt unsaved crash remain unverified |
-| Inherited other machines | P where known Ultimate/operation gaps; otherwise U | Dedicated parity and behavior checks are not replaced by bootstrap |
+| Inherited other machines | U where no dedicated parity round exists; P only where a concrete gap is named | Dedicated parity and behavior checks are not replaced by bootstrap |
 | Repair Talisman, apples, eggs/essences | U unless an explicit behavioral test is linked later | Functional behavior not established by registration/assets |
 | Optional JEI/Jade/Curios integrations | Implemented, selected client/presence/absence checks retained | Not every new card GUI/every mod combination |
 | Network/save/capabilities | Tested by subsystem, Forge replacements for NeoForge attachments | Absence of a global migration proof; scoped coverage only |
@@ -99,7 +99,7 @@ Curated behavioral classifications and notes live in `forge-1.20.1-audit-classif
   assert out.read_text()==rendered and md.read_text()==text,'Audit output stale; regenerate after reviewing classifications'
   port=(ROOT/'docs/forge-1.20.1-port.md').read_text()
   summary=port.split('<!-- current-status:start -->',1)[1].split('<!-- current-status:end -->',1)[0]
-  expected='- 120-item status: '+', '.join(f'{labels[k]} **{counts.get(k,0)}**' for k in labels)+f'; **{len(forge_ids)}** source items registered in Forge.'
+  expected='- 121-item status: '+', '.join(f'{labels[k]} **{counts.get(k,0)}**' for k in labels)+f'; **{len(forge_ids)}** source items registered in Forge.'
   assert expected in summary,'Current Status inventory counts differ from the authoritative matrix'
  else:out.write_text(rendered);md.write_text(text)
  print(f'Audited {len(rows)} source items, {len(forge_ids)} Forge items: {counts}')

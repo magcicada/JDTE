@@ -68,7 +68,18 @@ repositories {
     maven { url = 'https://maven.theillusivec4.top/' }
     maven { url = 'https://maven.ftb.dev/releases' }
     maven { url = 'https://api.modrinth.com/maven' }
-    maven { url = 'https://thedarkcolour.github.io/KotlinForForge/' }
+    maven {
+        name = "Kotlin for Forge"
+        url = 'https://thedarkcolour.github.io/KotlinForForge/'
+        // This mirror also exposes a curse-maven proxy path. It must never be
+        // consulted for curse.maven coordinates: when the mirror is down it
+        // answers 503 there, and a 503 is fatal for the whole resolution instead
+        // of falling through to cursemaven. The content filter (same shape as the
+        // 1.21.1 source) keeps the repository scoped to its own group.
+        content {
+            includeGroup "thedarkcolour"
+        }
+    }
     maven { url = 'https://www.cursemaven.com' }
 }
 
@@ -155,6 +166,11 @@ minecraft {
             }
             if (project.hasProperty('jdteSenderSmoke')) {
                 property 'jdte.senderSmoke', 'true'
+                args '--quickPlaySingleplayer', 'jdte-mineral-client-smoke', '--width', '1280', '--height', '720'
+                mods { "${mod_id}" { source sourceSets.clientSmoke } }
+            }
+            if (project.hasProperty('jdteUltimateSmoke')) {
+                property 'jdte.ultimateSmoke', 'true'
                 args '--quickPlaySingleplayer', 'jdte-mineral-client-smoke', '--width', '1280', '--height', '720'
                 mods { "${mod_id}" { source sourceSets.clientSmoke } }
             }

@@ -8,7 +8,7 @@ JDT Extras (`jdte`) is a Forge 1.20.1 extension for Just Dire Things (JDT). It a
 |----------|-------|
 | Mod ID | `jdte` |
 | Mod name | `JDT Extras` |
-| Current version | `0.5.8-forge-1.20.1` |
+| Current version | `0.6.5.4` |
 | Minecraft | `1.20.1` |
 | Forge | `47.4.10` |
 | Just Dire Things Forge | `1.1.4` |
@@ -16,7 +16,7 @@ JDT Extras (`jdte`) is a Forge 1.20.1 extension for Just Dire Things (JDT). It a
 
 Major features:
 
-- Standard upgrades: Capacity, Overclock, Underclock, Fluid, Fluid Storage, Generator, Range, Filter, Creative, Fortune, Precision, Looting and Sharpness, plus the currently mineral/mixer/transmitter/BioExtractor and item-sender Ultimate Capacity and Ultimate Overclock cards (item senders: verified V with real-client GUI/JEI/creative evidence, packaged dedicated-server lifecycle evidence, and a found-and-fixed survival-break capability crash; Basic fluid sender: verified V with real-client GUI/JEI/creative evidence and packaged dedicated-server lifecycle evidence, the seed-phase ItemEntity anomaly applying to the seed Extended break only; Advanced/Extended fluid senders stay P pending live confirmation of the client tank-bar display question; other restricted families remain restricted).
+- Standard upgrades: Capacity, Overclock, Underclock, Fluid, Fluid Storage, Generator, Range, Filter, Creative, Fortune, Precision, Looting and Sharpness, plus the Ultimate Capacity and Ultimate Overclock cards, whose gate follows the upstream default branch (every family except the intercepted Advanced Item Collector, which takes neither, and the Entity Suppressor/Range Blocker pair, which takes Ultimate Capacity only) (item senders: verified V with real-client GUI/JEI/creative evidence, packaged dedicated-server lifecycle evidence, and a found-and-fixed survival-break capability crash; Basic fluid sender: verified V with real-client GUI/JEI/creative evidence and packaged dedicated-server lifecycle evidence, the seed-phase ItemEntity anomaly applying to the seed Extended break only; Advanced/Extended fluid senders are now V after the client tank-bar question was closed (JDT integer bar arithmetic plus the JDTE minimum-one-pixel row, confirmed in a real headless client); the two cards are V with GameTest physical-effect coverage plus a headless real-client run on the glue activator and the loot fabricator, see [ultimate-card evidence](docs/validation/forge-1.20.1-ultimate-cards/README.md); the other default-branch hosts share the same gate but are not each individually runtime-accepted).
 - Basic, Advanced, and Extended Advanced Time Accelerators.
 - Eight extended variants of JDT T2 machines, each with eight standard upgrade slots.
 - Glue Activators, Gel Generators, Fluid Stabilizers, and item/fluid sender and receiver families.
@@ -24,8 +24,8 @@ Major features:
 - Entity Suppressor with entity-tick suppression, entity spawn/join blocking, entity and block entity rendering suppression, client particle suppression, and six entity target modes.
 - Range Blocker with six-target event-driven containment, projectile boundary protection, player-magnet suppression, and public-event positional sound suppression.
 - Crystal Incubator with generic budding-block discovery, Time Fluid growth acceleration, Fortune harvesting, and batched area caching.
-- Original horizontally connectable Greenhouse with four reusable stackable plant templates, paged output, bounded batch production, generic plant support, and public-API Mystical Agriculture/Agradditions support.
-- Glass-framed 3×3×2 Large Greenhouse with one controller, 17 stateless structure parts, nine client-rendered plants, nine reusable stackable plant templates, and unified paged output.
+- Original horizontally connectable Greenhouse with four reusable stackable plant templates, paged output, bounded batch production, generic plant support, and public-API Mystical Agriculture/Agradditions support. **Hidden from the creative tab and JEI** (see the note under the feature matrix): the machine works, but the source integration surface is a contract for the companion mod `jdte_matrix`, which has no 1.20.1 build.
+- Glass-framed 3×3×2 Large Greenhouse with one controller, 17 stateless structure parts, nine client-rendered plants, nine reusable stackable plant templates, and unified paged output. **Hidden from the creative tab and JEI** for the same reason as the greenhouse above.
 - Blazegold-framed Bio Factory with cached client-only creature rendering, data-driven animal products, four isolated fluid routes, eight default outputs, and public-API Productive Bees cages, flowering rules, hive products, Productivity Upgrades, and a non-self-breeding Life Fluid Bee production chain.
 - Life Breeder with three breeding/growth modes, 2x2 feed inputs, 4x2 collected-product outputs, direct biological-age advancement, standard `Animal` and Villager compatibility, spawn-egg entity filters, and bounded area processing.
 - Red-windowed 3×3×2 Life Synthesis Vat with one controller, 17 stateless structure parts, three data-driven recipe tiers, pending-queue backpressure, direct-neighbor distillation priority, Time Fluid doubling boost, and a client-rendered progress liquid column.
@@ -38,7 +38,7 @@ Major features:
 - Absolute-direction auto I/O configuration for machines with real item or fluid interfaces.
 - Wither, Ender Dragon, and Elder Guardian essences.
 
-The Mineral Extractor, Large Mineral Extractor and Mineral Survey are connected to the Forge game systems, with lifecycle/Factory Packer tests and real graphical client coverage. Basic/Advanced Upgrade Storage and the Advanced Machine Settings Copier are implemented, including native JDT basic copier compatibility. Crafting Pattern, basic/advanced Essence Conversion, AE Crafting Read, AE Extraction and basic/advanced AE Output are implemented. Seed Conversion is implemented for both greenhouse harvest paths. Real submitted AE crafting jobs now exercise Mineral Extractor read/output and fluid extraction. AE Acceleration is implemented for all three Time Accelerators with real native Inscriber/global-ticker tests and the source external-backend contract; the separately installed JDTE-AE backend remains unverified. Actual busy CPU jobs survive saved shutdown/restart. Two independent clients cover both mixer tiers, and the installed Forge Extras fuel/downstream recipe path is verified. Both Fluid Mixer tiers and Mixing/Ultimate Mixing Parallel are implemented with explicit three-tank Forge capabilities, atomic capacity-safe tier conversion, real AE processing jobs, graphical mixer checks and minimal production-server unload/restart checks. The current suite has 325 GameTests and 196 JUnit tests, retaining all previous 57/58 and the original 24 mineral core tests. Independent remote-client tests use two actual client JVMs and a separate production server; optional-absence runtime checks remove AE2, Curios, JEI and Jade. Packer storage paths must be captured on the server thread before asynchronous I/O. Read the latest checkpoint/evidence for exact tested scope; unchecked families remain unported.
+The Mineral Extractor, Large Mineral Extractor and Mineral Survey are connected to the Forge game systems, with lifecycle/Factory Packer tests and real graphical client coverage. Basic/Advanced Upgrade Storage and the Advanced Machine Settings Copier are implemented, including native JDT basic copier compatibility. Crafting Pattern, basic/advanced/ultimate Essence Conversion, AE Crafting Read, AE Extraction and basic/advanced AE Output are implemented. Seed Conversion is implemented for both greenhouse harvest paths. Real submitted AE crafting jobs now exercise Mineral Extractor read/output and fluid extraction. AE Acceleration is implemented for all three Time Accelerators with real native Inscriber/global-ticker tests and the source external-backend contract; the separately installed JDTE-AE backend remains unverified. Actual busy CPU jobs survive saved shutdown/restart. Two independent clients cover both mixer tiers, and the installed Forge Extras fuel/downstream recipe path is verified. Both Fluid Mixer tiers and Mixing/Ultimate Mixing Parallel are implemented with explicit three-tank Forge capabilities, atomic capacity-safe tier conversion, real AE processing jobs, graphical mixer checks and minimal production-server unload/restart checks. The current suite has 325 GameTests and 196 JUnit tests, retaining all previous 57/58 and the original 24 mineral core tests. Independent remote-client tests use two actual client JVMs and a separate production server; optional-absence runtime checks remove AE2, Curios, JEI and Jade. Packer storage paths must be captured on the server thread before asynchronous I/O. Read the latest checkpoint/evidence for exact tested scope; unchecked families remain unported.
 
 Energy Brewing and native/JDTE-transmitter Energy Overload are implemented with exact-cost/persistence/transfer tests. Advanced and Extended Energy Transmitters have scoped V acceptance including real graphical controls, online/dedicated Curios charging, installed ME production restart, real Draconic injector FE and mixed native-network conservation; see the latest transmitter acceptance evidence.
 
@@ -58,7 +58,7 @@ Time Multitool now has scoped V acceptance: source500kFE/1M Time Fluid/six modes
 
 The full 120-item [feature matrix](docs/forge-1.20.1-feature-matrix.md) distinguishes tested paths, inherited unverified code, known partial behavior and absent registrations. Registration and a build do not imply complete source parity.
 
-The 0.6.5.2 backport is in progress; see [port tracking](docs/forge-1.20.1-port.md). Do not advertise feature parity until the new registrations and runtime checks are complete.
+The 0.6.5.4 backport now covers every upstream 1.21.1 registration, including the Ultimate Essence Conversion Upgrade, the greenhouse pattern-rotation fix, the Bio Factory oversized-stack serializer and optional Curios; see [port tracking](docs/forge-1.20.1-port.md). Runtime acceptance for the newly ported paths is still outstanding, so per-item verification status is unchanged until dedicated evidence exists.
 
 ## Build and Run
 
@@ -74,6 +74,8 @@ Common commands:
 ```
 
 If dependency resolution fails, verify CurseMaven access and the coordinates in `dependencies.gradle` before changing source code.
+
+`bash gradlew runGameTestServer` is executed by the separate `Forge 1.20.1 GameTests` workflow (`.github/workflows/gametests.yml`), not by the push CI. It triggers on pushes touching `common/blockentities`, `common/upgrades`, `gametest` or the workflow itself, plus a weekly schedule, and currently reports **444/444 required tests passing**. Do not claim GameTest evidence for a change unless that workflow ran for it.
 
 The Productive Bees JEI bridge uses its public `AdvancedBeehiveRecipe` and ProductiveLib output types. `extractProductiveLib` copies the embedded ProductiveLib JarJar from the resolved Productive Bees dependency into `build/generated/productiveLib` for `compileOnly` use. It is a generated build artifact and is not packaged into JDTE.
 

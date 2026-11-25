@@ -1,10 +1,28 @@
 # JDT Extras
 
-JDT Extras (`jdte`) is a NeoForge addon for [Just Dire Things](https://www.curseforge.com/minecraft/mc-mods/just-dire-things). It adds upgrade cards, extended machines, time acceleration, area control, and automation devices for JDT.
+JDT Extras (`jdte`) is a Forge 1.20.1 addon for [Just Dire Things](https://www.curseforge.com/minecraft/mc-mods/just-dire-things). It adds upgrade cards, extended machines, time acceleration, area control, and automation devices for JDT.
 
-Current version: `0.5.8-forge-1.20.1`
+Current version: `0.6.5.4`
 
 [中文 README](README.md)
+
+### 0.6.5.4 additions
+
+- Completed the 1.21.1 → 1.20.1 port of the upstream 0.6.5.3/0.6.5.4 features.
+- Added the Ultimate Essence Conversion Upgrade (`jdte:ultimate_essence_conversion_upgrade`): binds up to 2,147,483,647 Crafting Patterns, is smithed from the Advanced card while preserving bound patterns, and is mutually exclusive with the normal and advanced cards.
+- Essence conversion tooltips and the Jade overlay now fold long pattern lists.
+- Fixed Greenhouse/Large Greenhouse essence pattern rotation overflowing its fixed three-slot array.
+- Fixed the Bio Factory crash when an output slot holds more than 99 items.
+- Curios is now an optional dependency with guarded lookups.
+- Upgrade compatibility now matches the upstream 1.21.1 gate: intercepted families keep their source lists (the Advanced Item Collector takes neither Ultimate card, the Entity Suppressor/Range Blocker pair takes Ultimate Capacity only) and every other family reaches the source default branch, so the Ultimate Capacity/Ultimate Overclock cards now install in glue activators, the Loot Fabricator, native JDT machines, the Time Freezer and the remaining families.
+- Both Ultimate cards move to V: `UltimateDefaultBranchGameTests` proves the real x50 capacity and cost, the one-card cap and save/reload on the glue activator and the Loot Fabricator, and a new headless real-client workflow (Xvfb) verifies both GUIs, the menu install path, the creative tab and JEI. See [ultimate-card evidence](docs/validation/forge-1.20.1-ultimate-cards/README.md).
+- 24 machine rows move from P to U: the Ultimate-card gate was their only named source-behaviour gap, and closing it leaves acceptance coverage as the remaining item, which is what U means. The 16 rows that stay P each name a concrete gap. Counts: V 61, U 44, P 16, N 0.
+- Fixed the empty tank bar on the fluid sender and receiver screens with large tanks (JDT sizes the bar with integer arithmetic, so 4,000 mB in a 400,000 mB Ultimate Capacity tank computed to 0 px); `BaseMachineScreenMixin` now paints the missing row. The Advanced and Extended fluid senders therefore move to V, confirmed by a real headless client run (44673884793) showing exactly one logical pixel. Counts: V 63, U 44, P 14, N 0.
+- The eight Extended T2 machines move from P to U: the operation-parity review found no missing method, and the one concrete divergence (the source try/catch fallback around `getCloneItemStack`) is now ported to the clicker, breaker, placer, swapper, fluid placer and time accelerators. Counts: V 63, U 52, P 6, N 0.
+- The Advanced Potion Brewer moves from P to V: it was the only machine without `CoalescedAcceleratedMachine`, so Time Accelerator ticks aimed at it were dropped; the source accumulate/flush/replay path is now ported, and the GameTest pins the source accounting: a coalesced step pays 300 FE and buys one blaze charge when none is stored, without consuming it. The two greenhouses keep P with a corrected note: their matrix surface is a contract for a companion mod with no 1.20.1 counterpart. Counts: V 64, U 52, P 5, N 0.
+- The three time accelerators move from P to U: the only real gap was the block-state filter cache (the source caches filter results so the scheduler stops re-evaluating the same state), now ported with a GameTest; `TimeAccelerationTargetProxy` is byte-identical to the source; the "server timing" item is this branch's own scheduler design, not a missing API. Counts: V 64, U 55, P 2, N 0.
+- The two greenhouses (`jdte:greenhouse` / `jdte:large_greenhouse`) are hidden from the creative tab and JEI (item list, recipe category, recipes and catalysts) while staying registered so existing worlds keep loading. Reason: the machines work, but their source integration surface `GreenhouseMatrixMember` / `ICreativeGreenhouse` is a contract for the companion mod `jdte_matrix`, which has no 1.20.1 build; presenting them as finished content would misrepresent the port.
+- The six item/fluid receiver tiers and the three fluid stabilizer tiers move from U to V on the dedicated GameTests that already covered them (real adjacent inventories/tanks, exact conservation, save/load, FE gating, a real FluidDrop recipe with a single catalyst). Counts: V 100, U 19, P 2, N 0.
 
 ### 0.5.8 additions
 
