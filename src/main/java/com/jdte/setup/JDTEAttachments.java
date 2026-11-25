@@ -255,14 +255,14 @@ public final class JDTEAttachments {
 
         @Override
         public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction side) {
-+            if (capability != LIFE_APPLE_DATA) {
-+                return LazyOptional.empty();
-+            }
-+            // Forge revives the entity's capability dispatcher, but not its old handles.
-+            if (!optional.isPresent()) {
-+                optional = LazyOptional.of(() -> data);
-+            }
-+            return optional.cast();
+            if (capability != LIFE_APPLE_DATA) {
+                return LazyOptional.empty();
+            }
+            // Forge revives the entity's capability dispatcher, but not its old handles.
+            if (!optional.isPresent()) {
+                optional = LazyOptional.of(() -> data);
+            }
+            return optional.cast();
         }
 
         @Override
